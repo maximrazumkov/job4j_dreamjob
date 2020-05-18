@@ -71,6 +71,14 @@ public class PsqlStore implements Store {
         return null;
     }
 
+    public void saveCandidate(Candidate candidate) {
+
+    }
+
+    public Candidate findCandidateById(int id) {
+        return null;
+    }
+
     @Override
     public void save(Post post) {
         if (post.getId() == 0) {
