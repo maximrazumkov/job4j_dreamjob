@@ -5,10 +5,17 @@ import java.util.Objects;
 public class Candidate {
     private int id;
     private String name;
+    private Integer cityId;
 
     public Candidate(int id, String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public Candidate(int id, String name, Integer cityId) {
+        this.id = id;
+        this.name = name;
+        this.cityId = cityId;
     }
 
     public int getId() {
@@ -27,6 +34,14 @@ public class Candidate {
         this.name = name;
     }
 
+    public Integer getCityId() {
+        return cityId;
+    }
+
+    public void setCityId(Integer cityId) {
+        this.cityId = cityId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -39,5 +54,14 @@ public class Candidate {
     @Override
     public int hashCode() {
         return Objects.hash(id, name);
+    }
+
+    @Override
+    public String toString() {
+        return "Candidate{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", city='" + cityId + '\'' +
+                '}';
     }
 }

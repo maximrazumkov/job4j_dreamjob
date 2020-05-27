@@ -26,12 +26,29 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
 
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js" ></script>
     <title>Работа мечты</title>
+    <script>
+        function validate() {
+            var result = true;
+            var name = $('#name').val();
+            if (name === '' || name == undefined || name == null) {
+                result = false;
+                alert($('#name').attr('title'));
+            }
+            var city = $('#city').val();
+            if (city === 'empty') {
+                result = false;
+                alert($('#city').attr('title'));
+            }
+            return result;
+        }
+    </script>
 </head>
 <body>
 <%
     String id = request.getParameter("id");
-    Candidate candidate = new Candidate(0, "");
+    Candidate candidate = new Candidate(0, "", 0);
     if (id != null) {
         candidate = PsqlStore.instOf().findCandidateById(Integer.valueOf(id));
     }
@@ -47,16 +64,42 @@
                 <% } %>
             </div>
             <div class="card-body">
-                <form action="<%=request.getContextPath()%>/candidate/candidates.do?id=<%=candidate.getId()%>" method="post">
+                <form action="<%=request.getContextPath()%>/candidate/candidates.do?id=<%=candidate.getId()%>" method="post" onsubmit="return validate()">
                     <div class="form-group">
                         <label>Имя</label>
-                        <input type="text" class="form-control" name="name" value="<%=candidate.getName()%>">
+                        <input id="name" type="text" title="Enter candidate name." class="form-control"  name="name" value="<%=candidate.getName()%>">
+                        <label>Город</label>
+                        <select id="city" class="form-control" title="Enter candidate city." name="city" value="<%=candidate.getCityId()%>">
+                            <option value ="empty"></option>
+                        </select>
                     </div>
-                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                    <input type="submit" class="btn btn-primary" value="Сохранить" />
                 </form>
             </div>
         </div>
     </div>
 </div>
+<script>
+    function load() {
+        let x = $('#city').attr('value');
+        $.ajax({
+            type: 'GET',
+            url: 'http://localhost:8080/dreamjob/citys',
+            dataType: 'text'
+        }).done(function(data) {
+            let cities = JSON.parse(data);
+            for (let i = 0; i < cities.length; ++i) {
+                $('#city option:last').after(
+                    '<option value = \"' + cities[i].id + '\" ' + ((x == cities[i].id) ? ' selected' : '') + '>' +
+                        cities[i].name +
+                    '</option>'
+                );
+            }
+        }).fail(function(err){
+            alert(err.toSource);
+        });
+    }
+    load();
+</script>
 </body>
 </html>

@@ -1,6 +1,8 @@
 package ru.job4j.dream.store;
 
 import ru.job4j.dream.model.Candidate;
+import ru.job4j.dream.model.City;
+import ru.job4j.dream.model.Coutry;
 import ru.job4j.dream.model.Post;
 
 import java.util.Collection;
@@ -17,4 +19,6 @@ public interface Store {
     void saveCandidate(Candidate candidate);
 
     Candidate findCandidateById(int id);
+
+    Collection<City> findAllCities();
 }
