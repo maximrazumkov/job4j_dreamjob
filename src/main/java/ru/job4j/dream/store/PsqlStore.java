@@ -1,10 +1,7 @@
 package ru.job4j.dream.store;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import ru.job4j.dream.model.Candidate;
-import ru.job4j.dream.model.City;
-import ru.job4j.dream.model.Coutry;
-import ru.job4j.dream.model.Post;
+import ru.job4j.dream.model.*;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -100,7 +97,8 @@ public class PsqlStore implements Store {
                             new Candidate(
                                     it.getInt("id"),
                                     it.getString("name"),
-                                    it.getInt("city_id")
+                                    it.getInt("city_id"),
+                                    it.getInt("photo_id")
                             )
                     );
                 }
@@ -136,13 +134,14 @@ public class PsqlStore implements Store {
         }
     }
 
-    private void updateCandidate(Candidate candidate) {
+    public void updateCandidate(Candidate candidate) {
         try (Connection cn = pool.getConnection();
-             PreparedStatement ps =  cn.prepareStatement("UPDATE candidate SET name=?, city_id=? WHERE id=?")
+             PreparedStatement ps =  cn.prepareStatement("UPDATE candidate SET name=?, city_id=?, photo_id=? WHERE id=?")
         ) {
             ps.setString(1, candidate.getName());
             ps.setInt(2, candidate.getCityId());
-            ps.setInt(3, candidate.getId());
+            ps.setInt(3, candidate.getPhotoId());
+            ps.setInt(4, candidate.getId());
             ps.execute();
         } catch (Exception e) {
             e.printStackTrace();
@@ -170,6 +169,29 @@ public class PsqlStore implements Store {
             e.printStackTrace();
         }
         return candidates.get(0);
+    }
+
+    @Override
+    public Photo findPhototeById(int id) {
+        List<Photo> photos = new ArrayList<>();
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps =  cn.prepareStatement("SELECT * FROM photo where id = ?")
+        ) {
+            ps.setInt(1, id);
+            try (ResultSet it = ps.executeQuery()) {
+                while (it.next()) {
+                    photos.add(
+                            new Photo(
+                                    it.getInt("id"),
+                                    it.getString("name")
+                            )
+                    );
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return photos.get(0);
     }
 
     @Override
@@ -207,4 +229,33 @@ public class PsqlStore implements Store {
         return null;
     }
 
+    @Override
+    public int createPhoto(Photo photo) {
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps =  cn.prepareStatement("INSERT INTO photo(name) VALUES (?)", PreparedStatement.RETURN_GENERATED_KEYS)
+        ) {
+            ps.setString(1, photo.getName());
+            ps.execute();
+            try (ResultSet id = ps.getGeneratedKeys()) {
+                if (id.next()) {
+                    photo.setId(id.getInt(1));
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return photo.getId();
+    }
+
+    @Override
+    public void deletePhotoById(int id) {
+        try (Connection cn = pool.getConnection();
+             PreparedStatement ps =  cn.prepareStatement("DELETE FROM photo WHERE id=?")
+        ) {
+            ps.setInt(1, id);
+            ps.execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -43,6 +43,8 @@
                     <thead>
                     <tr>
                         <th scope="col">Названия</th>
+                        <th scope="col">Картинка</th>
+                        <th scope="col">Загрузить картинку</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -53,6 +55,18 @@
                                     <i class="fa fa-edit mr-3"></i>
                                 </a>
                                 <c:out value="${candidate.name}"/>
+                            </td>
+                            <td>
+                                <img src="<c:url value='/download?id=${candidate.photoId}'/>" width="100px" height="100px"/>
+                                <a href="<c:url value='/download?id=${candidate.photoId}'/>">Download</a>
+                            </td>
+                            <td>
+                                <form action="<c:url value='/upload?id=${candidate.id}'/>" method="post" enctype="multipart/form-data">
+                                    <div class="checkbox">
+                                        <input type="file" name="file">
+                                    </div>
+                                    <input type="submit" class="btn btn-primary" value="Загрузить" />
+                                </form>
                             </td>
                         </tr>
                     </c:forEach>
