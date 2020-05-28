@@ -1,0 +1,36 @@
+package ru.job4j.dream.servlet;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import ru.job4j.dream.store.PsqlStore;
+import ru.job4j.dream.store.Store;
+import ru.job4j.dream.store.StubStore;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(PsqlStore.class)
+public class CandidateServletTest {
+    @Test
+    public void cteateCandidate() throws Exception {
+        Store store = new StubStore();
+        PowerMockito.mockStatic(PsqlStore.class);
+        when(PsqlStore.instOf()).thenReturn(store);
+        HttpServletRequest req = mock(HttpServletRequest.class);
+        HttpServletResponse resp = mock(HttpServletResponse.class);
+        when(req.getParameter("id")).thenReturn("0");
+        when(req.getParameter("city")).thenReturn("1");
+        when(req.getParameter("name")).thenReturn("Petr Arsentev");
+        new CandidateServlet().doPost(req, resp);
+        assertThat(store.findAllCandidates().iterator().next().getName(), is("Petr Arsentev"));
+    }
+}
